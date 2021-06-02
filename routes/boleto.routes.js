@@ -1,12 +1,13 @@
 const router = require("express").Router();
 
 // Metodo get para a rota boleto
-router.get('/boleto/:barcode', (req, res) => {
+router.get('/:barcode', (req, res) => {
     try { 
 
         // Coleta o valor do parametro de rota 'barcode' do request
         const { barcode } = req.params;
         
+        console.log(barcode);
         // res.send('<h1>Barcode: ' + barcode + '</h1>');
         
         // Retorna status 'OK' com as chaves e valores do cod. de barras

@@ -4,7 +4,7 @@ const express = require("express");
 
 const app = express();
 
-const boletoRoute = require("./routes/home.routes");
+const boletoRoute = require("./routes/boleto.routes");
 const homeRoute = require("./routes/home.routes");
 
 // Diferentes rotas, diferentes arquivos
