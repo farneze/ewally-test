@@ -4,10 +4,12 @@ const express = require("express");
 
 const app = express();
 
-app.get('/home', (request, response, next) => {
-    console.log(request);
-    response.send('<h1>Hello World</h1>');
-    });
+const boletoRoute = require("./routes/home.routes");
+const homeRoute = require("./routes/home.routes");
+
+// Diferentes rotas, diferentes arquivos
+app.use("/boleto", boletoRoute);
+app.use("/", homeRoute);
 
 app.listen(process.env.PORT, () =>
   console.log(`running at port ${process.env.PORT}`)
