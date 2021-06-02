@@ -7,10 +7,11 @@ const app = express();
 const boletoRoute = require("./routes/boleto.routes");
 const homeRoute = require("./routes/home.routes");
 
-// Diferentes rotas, diferentes arquivos
+// Rota para apenas boleto. Desvia-se todas as outras
 app.use("/boleto", boletoRoute);
 app.use("/", homeRoute);
 
+// Porta definida no arquivo .env
 app.listen(process.env.PORT, () =>
   console.log(`running at port ${process.env.PORT}`)
 );

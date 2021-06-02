@@ -21,11 +21,6 @@ router.get('/:codeSent', (req, res) => {
             let codeSections = [...new Array(4)].map((el, i)=> codeSent.substring(i*12, (i+1)*12));
             
             console.log(codeSections);
-            // if (codeSent.length == 48){
-            //     return res.status(200).json({
-            //         barCode: `${code}`
-            //     })
-            // }
 
             return res.status(200).json({ 
                 barCode: `${codeSent}`,

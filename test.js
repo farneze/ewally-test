@@ -2,36 +2,12 @@
 const receivedCode = '21290001192110001210904475617405975870000002000';
 
 console.log(receivedCode.length);
-console.log('----Test-----');
-
-// let str1 = "001905009".split('').map(el => Number(el) );
-// let str2 = "4014481606".split('').map(el => Number(el) );
-// let str3 = "0680935031".split('').map(el => Number(el) );
-// let str4 = "00190500954014481606906809350314".split('').map(el => Number(el) );
-
-// console.log(dac10(str1,5));
-// console.log(dac10(str2,9));
-// console.log(dac10(str3,4));
-// console.log(dac11(str4,3));
-
-let str1 = [ '2129000119', '21100012109', '04475617405']
-// let str1 = [ '2129000119', '21100012109', '04475617405', '9', '75870000002000' ]
-
-// console.log('-----teste----')
-
-// console.log(separateCodeVD(str1));
-// console.log('-----teste----')
-
-// const multiplierArr= [2, 3, 4, 5, 6, 7, 8, 9];
-//[...new Array(14)].forEach((el,i) => console.log());
-// const date1 = new Date('07/03/2000');
 
 if ( receivedCode.length == 48 ){
 
     const code44 = verify48(receivedCode);
     console.log(code44.length);
     if (code44 != false){
-        // console.log(code44);
         console.log(code44.join('').substring(4, 15));
         console.log(code44.join('').substring(19, 28));
         // var d1 = new Date("08/14/2020");
@@ -39,26 +15,25 @@ if ( receivedCode.length == 48 ){
 
         
     } else {
-        console.log('erro'); // TODO COLOCAR ERRO
+        console.log('error'); // TODO COLOCAR ERRO
     }
     
 } else if ( receivedCode.length == 47 ){
     
     const code44 = verify47(receivedCode)
+    console.log(code44);
 
     if (code44 != false){
-        console.log("YEY47");
+        console.log(code44.join('').substring(10, 19));
+        console.log(code44.join('').substring(19, 28));
+        // var d1 = new Date("08/14/2020");
+        // console.log(date1);
     } else {
-        // TODO COLOCAR ERRO
+        console.log('error');// TODO COLOCAR ERRO
     }
 
-} else if ( receivedCode.length == 44 ){
-
-    if (verify44(codeSections)){
-        console.log("YEY44");
-    } else {
-        // TODO COLOCAR ERRO
-    }
+} else {
+    console.log('error'); // TODO COLOCAR ERRO
 }
 
 function verify47(receivedCode) {
@@ -79,13 +54,8 @@ function verify47(receivedCode) {
 
     conditions = dac10Codes.map((el, i) => dac10(sequences[i], digits[i]));
 
-    // conditions.push(dac11(dac10Codes.join().split(''), codeSections[3]));
-    
-    // dac11Code = dac10Codes.join('').split('').map(el => Number(el))
-
-    // console.log(dac11(dac11Code.reverse(), codeSections[3]))
-
     let barCode =[ receivedCode.substring(0,4),
+                   receivedCode.substring(32,33),
                    receivedCode.substring(33,48),
                    receivedCode.substring(4,9),
                    receivedCode.substring(10,20),
@@ -95,11 +65,14 @@ function verify47(receivedCode) {
                      .split('')
                      .map(el => Number(el) )
                      .reverse();
-    
-    conditions.push(dac11(barCode, codeSections[3]));
 
+    conditions.push(dac11(barCode.filter((el, i) => i != 39), codeSections[3]));
+
+    console.log(conditions);
+
+    // barCode = barCode.splice(39,0,).reverse();
     if (conditions.every(el => el == true)){
-        return barCode;
+        return barCode.reverse();
     } else {
         return false;
     }
@@ -182,7 +155,8 @@ function dac10(sequence, digit){
 
 function dac11(sequence, digit){
     const multiplierArr= [2, 3, 4, 5, 6, 7, 8, 9];
-
+    console.log('----te');
+    console.log(sequence);
     let sum = [...sequence].reduce((acc,val,i)=> acc + val*multiplierArr[i%8], 0);
 
     const remainder = sum%11;
