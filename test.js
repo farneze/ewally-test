@@ -1,124 +1,193 @@
-const receivedCode = '826300000005714500971490320059321911725107210124';
-console.log('--------');
-// console.log(dac11([6, 9, 8, 7, 6, 0, 0, 3, 2, 1, 0], 0))
+// const receivedCode = '826300000005714500971490320059321911725107210124';
+const receivedCode = '21290001192110001210904475617405975870000002000';
 
-const multiplierArr= [2, 3, 4, 5, 6, 7, 8, 9];
+console.log(receivedCode.length);
+console.log('----Test-----');
+
+// let str1 = "001905009".split('').map(el => Number(el) );
+// let str2 = "4014481606".split('').map(el => Number(el) );
+// let str3 = "0680935031".split('').map(el => Number(el) );
+// let str4 = "00190500954014481606906809350314".split('').map(el => Number(el) );
+
+// console.log(dac10(str1,5));
+// console.log(dac10(str2,9));
+// console.log(dac10(str3,4));
+// console.log(dac11(str4,3));
+
+let str1 = [ '2129000119', '21100012109', '04475617405']
+// let str1 = [ '2129000119', '21100012109', '04475617405', '9', '75870000002000' ]
+
+// console.log('-----teste----')
+
+// console.log(separateCodeVD(str1));
+// console.log('-----teste----')
+
+// const multiplierArr= [2, 3, 4, 5, 6, 7, 8, 9];
 //[...new Array(14)].forEach((el,i) => console.log());
+// const date1 = new Date('07/03/2000');
 
 if ( receivedCode.length == 48 ){
-    let codeSections = [...new Array(4)].map((el, i)=> receivedCode.substring(i*12, (i+1)*12));
 
-    if (verify48(codeSections)){
-        console.log("YEY");
+    const code44 = verify48(receivedCode);
+    console.log(code44.length);
+    if (code44 != false){
+        // console.log(code44);
+        console.log(code44.join('').substring(4, 15));
+        console.log(code44.join('').substring(19, 28));
+        // var d1 = new Date("08/14/2020");
+        // console.log(date1);
+
+        
     } else {
-        // TODO COLOCAR ERRO
+        console.log('erro'); // TODO COLOCAR ERRO
     }
     
 } else if ( receivedCode.length == 47 ){
+    
+    const code44 = verify47(receivedCode)
 
-} 
+    if (code44 != false){
+        console.log("YEY47");
+    } else {
+        // TODO COLOCAR ERRO
+    }
 
+} else if ( receivedCode.length == 44 ){
 
-function verify48(codeSections) {
+    if (verify44(codeSections)){
+        console.log("YEY44");
+    } else {
+        // TODO COLOCAR ERRO
+    }
+}
+
+function verify47(receivedCode) {
+
+    let codeSections = [ receivedCode.substring(0,10),
+                         receivedCode.substring(10,21),
+                         receivedCode.substring(21,32),
+                         receivedCode.substring(32,33),
+                         receivedCode.substring(33,48) ];
+
+    let conditions = [];
+    
+    let dac10Codes = [ ...codeSections ];
+    dac10Codes.pop();
+    dac10Codes.pop();
+
+    let [ sequences, digits ] = separateCodeVD(dac10Codes);
+
+    conditions = dac10Codes.map((el, i) => dac10(sequences[i], digits[i]));
+
+    // conditions.push(dac11(dac10Codes.join().split(''), codeSections[3]));
+    
+    // dac11Code = dac10Codes.join('').split('').map(el => Number(el))
+
+    // console.log(dac11(dac11Code.reverse(), codeSections[3]))
+
+    let barCode =[ receivedCode.substring(0,4),
+                   receivedCode.substring(33,48),
+                   receivedCode.substring(4,9),
+                   receivedCode.substring(10,20),
+                   receivedCode.substring(21,31) ];
+
+    barCode = barCode.join('')
+                     .split('')
+                     .map(el => Number(el) )
+                     .reverse();
+    
+    conditions.push(dac11(barCode, codeSections[3]));
+
+    if (conditions.every(el => el == true)){
+        return barCode;
+    } else {
+        return false;
+    }
+}
+
+function separateCodeVD(codeSections) {
+    // Separa digito verificador do resto
+    const digits = codeSections.map( el => el.split('')
+                                             .splice(el.length-1 ,1))
+                                             .map(el => Number(el) );
+
+    // Coleta os numeros sem digito verificador
+    const sequences = codeSections.map( el => el.split('')
+                                                .slice(0, el.length-1)
+                                                .map(el => Number(el) ));
+                                                
+    return [ sequences, digits ];
+}
+
+function verify48(receivedCode) {
+    let codeSections = [...new Array(4)].map((el, i)=> receivedCode.substring(i*12, (i+1)*12));
+
     // Inicializa uma variavel para armazenar bools das checagens
     let conditions = [];
 
-    // separa digito verificador do resto
-    const digits = codeSections.map( el => el.split('')
-                                          .splice(11,1)); 
+    let [ sequences, digits ] = separateCodeVD(codeSections);
 
-    // coleta os numeros sem digito verificador
-    const sequences = codeSections.map( el => el.split('')
-                                              .slice(0,11)
-                                              .map(el => Number(el) ));
-    
-
-    // Separa 4º digito do codigo (DV geral) e concatena ultima sequencia para ultima verificacao
-    let fullCode = sequences.flat();
-
-    // Remove 4º dígito da sequencia ao mesmo tempo em que adiciona a uma variavel
-    let fullCodeDigit = fullCode.splice(3,1); 
+    // Remove 4º dígito da sequencia ao mesmo tempo em que o adiciona a uma variavel
+    let barCode = sequences.flat();
+    let barCodeDigit = barCode.splice(3,1);
 
     // Inicializa DV do codigo inteiro
-    let fullCodeVerifier;
+    let barCodeVerifier;
 
     // Coleta algarismo para verificar se utilizara dac10 ou dac11
-    const dacAlgorism = fullCode[2];
-    
+    const dacAlgorism = barCode[2];
+
     // Aplica dac10 ou dac11 para cada sequencia e verifica validade da mesma
     if(dacAlgorism == 6 || dacAlgorism == 7){
         conditions = codeSections.map((el, i) => dac10(sequences[i], digits[i]));
-        fullCodeVerifier = dac10(fullCode, fullCodeDigit)
+        barCodeVerifier = dac10(barCode, barCodeDigit)
 
     } else if(dacAlgorism == 8 || dacAlgorism == 9) {
-        conditions = codeSections.map((el, i) => dac11(sequences[i].reverse(), digits[i]));
-        fullCodeVerifier = dac11(fullCode, fullCodeDigit)
+        conditions = codeSections.map((el, i) => dac11(sequences[i], digits[i]));
+        barCodeVerifier = dac11(barCode, barCodeDigit)
     } else {
-        return false; // TODO COLOCAR ERRO
+        return false;
     }
 
     // Adiciona o bool o array
-    conditions.push(fullCodeVerifier);
+    conditions.push(barCodeVerifier);
+
+    // Devolve o DV para o barCode
+    barCode.splice(3,0,barCodeDigit.flat());
 
     // Apos a verificacao de cada um dos 4 campos e do DV geral
     // Retorna 'true' se todas passaram na verificacao
-    return conditions.every(el => el == true);
+    if (conditions.every(el => el == true)){
+        return barCode;
+    } else {
+        return false;
+    }
 }
 
 
 function dac10(sequence, digit){
-    const sum = sequence.reduce((acc,val,i)=> i%2 == 0? acc + sumN(val*2) : acc+val,0);
+    const multiplierArr = [2, 1];
+
+    const sum = [...sequence].reverse().reduce((acc,val,i) => acc + sumN(val*multiplierArr[i%2]), 0);
     
-    const remainder = sum%10;   
+    const remainder = sum%10;
     let total = remainder == 0 ? 0 : 10-remainder;
     
     return total == digit ? true : false;
+
+    function sumN(value){
+        return value.toString(10).split('').reduce((acc,val)=> acc + Number(val), 0);
+    }
 }
 
 function dac11(sequence, digit){
     const multiplierArr= [2, 3, 4, 5, 6, 7, 8, 9];
-    let sum = sequence.reduce((acc,val,i)=> acc + val*multiplierArr[i%8], 0);
+
+    let sum = [...sequence].reduce((acc,val,i)=> acc + val*multiplierArr[i%8], 0);
 
     const remainder = sum%11;
-    let total = remainder <= 2 ? 0 : 11-remainder;
+
+    let total = remainder < 2 ? 0 : 11-remainder;
 
     return total == digit ? true : false;
 }
-
-function sumN(value){
-
-    return value.toString(10).split('').reduce((acc,val)=> acc + Number(val), 0);
-}
-
-
-
-// public String valida(valor) {
-
-//     if (tamanho == 44) { //Provavelmente é código de barras
-//       if (primeirodigito == 8) { //Provavelmente código de arrecadação
-//         if (é um código de barras válido para arrecadação) {
-//           return "Código de Barras Arrecadação";
-//         }
-//       }
-//       //Se não começa com 8, ou se não era válido, tentamos como boleto
-//       if (é um código de barras válido para boleto) {
-//         return "Código de Barras Boleto";
-//       }
-//     }
-
-
-//     //Se o tamanho não é 44, ou se falhou em validar como código de barras, vamos processar como representação numérica
-//     //A primeira é a representação de arrecadação, que é sempre fixa e é a maior
-//     if (tamanho == 48) {
-//       if (valida representação numérica de arrecadação) {
-//         return "Representação numérica de arrecadação";
-//       }
-//     } else if (tamanho >= 33 && tamanho <= 47) {
-//       //Se o tamanho está entre os tamanhos que a representação numérica do boleto pode ter, validamos para verificar
-//       if (valida representação numérica de boleto) {
-//         return "Representação numérica de boleto";
-//       }
-//     }
-
-//     throw "Valor não reconhecido!";
-// }
