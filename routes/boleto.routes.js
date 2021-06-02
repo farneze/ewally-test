@@ -11,10 +11,11 @@ router.get('/:codeSent', (req, res) => {
         // e alguns caracteres especiais #?!@$%^&*-
         const regex = /[a-z]|[#?!@$%^&*-]/gi;
 
-        // Verifica se 'codeSent' passa no filtro.
+        // Verifica se 'codeSent' passa no filtro
         const letters = codeSent.match(regex);
 
-        // Se não houver match na filtragem anterior, 'letters' será null
+        // Se não houver match com o filtro anterior, 'letters' será null
+        // Isso significa que o código enviado contém apenas números
         if(letters == null){
 
             let codeSections = [...new Array(4)].map((el, i)=> codeSent.substring(i*12, (i+1)*12));
