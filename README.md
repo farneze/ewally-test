@@ -35,3 +35,5 @@ Detalhamento:
   * [#?!@$%^&*-] -> este trecho que foi utilizado no programa, busca pelos '**caracteres especiais**' mais comuns
   * flag 'i' -> indica que a busca é '**case insensitive**', ou seja, ele leva em conta tanto letras maiúsculoas e minúsculas quando busca pelos caracteres do afabeto
   * | -> 'barra vertical', equivalente a 'OU', indica que deve procurar a string que contenha 'caracteres do alfabeto **OU** caracteres especiais'
+
+  Após a verificação, o código recebido é rejeitado se houver um _match_.
