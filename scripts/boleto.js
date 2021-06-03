@@ -1,6 +1,7 @@
 module.exports = {
-        
+    
     verify47: function (receivedCode) {
+
 
         let codeSections = [ receivedCode.substring(0,10),
                             receivedCode.substring(10,21),
@@ -40,20 +41,6 @@ module.exports = {
         }
     },
 
-    separateCodeVD: function (codeSections) {
-        // Separa digito verificador do resto
-        const digits = codeSections.map( el => el.split('')
-                                                .splice(el.length-1 ,1))
-                                                .map(el => Number(el) );
-
-        // Coleta os numeros sem digito verificador
-        const sequences = codeSections.map( el => el.split('')
-                                                    .slice(0, el.length-1)
-                                                    .map(el => Number(el) ));
-                                                    
-        return [ sequences, digits ];
-    },
-
     verify48: function (receivedCode) {
         let codeSections = [...new Array(4)].map((el, i)=> receivedCode.substring(i*12, (i+1)*12));
 
@@ -74,7 +61,7 @@ module.exports = {
 
         // Aplica dac10 ou dac11 para cada sequencia e verifica validade da mesma
         if(dacAlgorism == 6 || dacAlgorism == 7){
-            conditions = codeSections.map((el, i) => dac10(sequences[i], digits[i]));
+            conditions = codeSections.map((el, i) => this.dac10(sequences[i], digits[i]));
             barCodeVerifier = this.dac10(barCode, barCodeDigit)
 
         } else if(dacAlgorism == 8 || dacAlgorism == 9) {
@@ -125,5 +112,19 @@ module.exports = {
         let total = remainder < 2 ? 0 : 11-remainder;
 
         return total == digit ? true : false;
+    },
+
+    separateCodeVD: function (codeSections) {
+        // Separa digito verificador do resto
+        const digits = codeSections.map( el => el.split('')
+                                                .splice(el.length-1 ,1))
+                                                .map(el => Number(el) );
+
+        // Coleta os numeros sem digito verificador
+        const sequences = codeSections.map( el => el.split('')
+                                                    .slice(0, el.length-1)
+                                                    .map(el => Number(el) ));
+                                                    
+        return [ sequences, digits ];
     }
 };
