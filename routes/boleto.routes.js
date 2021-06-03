@@ -4,15 +4,12 @@ const boleto = require("../scripts/boleto.js");
 // const receivedCode = '826300000005714500971490320059321911725107210124';
 // const receivedCode = '21290001192110001210904475617405975870000002000';
 
-// const day1 = new Date("07/03/2000");
-// const today = Date.now();
-// const diff = (today - day1) / (1000 * 3600 * 24);
-// const fator = diff + 999
-
 // Metodo get para a rota boleto
 router.get('/:receivedCode', (req, res) => {
     try { 
         
+        let code44, amount, expDate, factor;
+
         // Coleta o valor do parametro de rota 'receivedCode' do request
         const { receivedCode } = req.params;
 
@@ -25,8 +22,6 @@ router.get('/:receivedCode', (req, res) => {
 
         // Se não houver match com o filtro anterior, 'letters' será null
         // Isso significa que o código enviado contém apenas números
-        let code44, amount, expDate;
-
         if(letters == null){
             if ( receivedCode.length == 48 ){
 
@@ -38,14 +33,22 @@ router.get('/:receivedCode', (req, res) => {
                 } else {
                     throw new Error('Código inválido. Falha nos dígitos de validação.');
                 }
-                
+
             } else if ( receivedCode.length == 47 ){
-                
+
                 code44 = boleto.verify47(receivedCode).join('');
-            
+
                 if (code44 != false){
                     amount = Number.parseFloat(code44.substring(10, 19))/100;
-                    expDate = code44.substring(19, 28);
+
+                    factor = code44.substring(5, 9);
+                    
+                    const day1 = new Date("07/03/2000");
+                    const unixDate = day1.getTime() + (factor - 1000) * (1000 * 3600 * 24);
+                    const finalDate = new Date(unixDate);
+                    
+                    expDate = finalDate.toISOString().split('T')[0];
+                    
                 } else {
                     throw new Error('Código inválido. Falha nos dígitos de validação.');
                 }
